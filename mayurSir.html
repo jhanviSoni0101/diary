@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background-color: whitesmoke;
+            height: 100vh;
+        }
+
+
+        #start {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+        }
+
+        #start>h1 {
+            color: #0F4C5C;
+            font-size: 50px;
+        }
+
+        #start>p {
+            font-size: 15px;
+            color: #7b7979;
+        }
+
+        #start>button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            background-color: rgb(37, 72, 94);
+            color: white;
+            cursor: pointer;
+        }
+
+        #screen {
+            display: none;
+        }
+
+        nav {
+            background-color: rgb(238, 235, 235);
+            padding: 12px;
+            font-weight: bold;
+            color: #0F4C5C;
+            border-bottom: 1px solid #d0cece;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #093b47;
+            margin: 20px;
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #dcd9d9;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: rgb(37, 72, 94);
+            ;
+            color: white;
+            border: none;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .cards {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            /* border: 1px solid blue; */
+        }
+
+        .card {
+            width: 45%;
+            background: white;
+            padding: 10px;
+            border-left: 4px solid #0F4C5C;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="start">
+        <h1>The Mayur Diary</h1>
+        <p>Mayur – symbol of grace, wisdom & inner balance</p>
+        <button id="enter">Enter Diary</button>
+    </div>
+    <div id="screen">
+        <nav>The Mayur Diary</nav>
+        <div class="container">
+            <h2>Notes</h2>
+            <form class="my-form">
+                <textarea class="my_desc" placeholder="write note..."></textarea>
+                <button type="submit">Save Note</button>
+            </form>
+            <div class="cards todos"></div>
+            <h2>Highlights</h2>
+            <form class="myhighlights">
+                <input type="text" class="Highlight-form" placeholder="write highlights...">
+                <button type="submit">Save Highlight</button>
+            </form>
+            <div class="cards highlights_list"></div>
+        </div>
+    </div>
+
+</body>
+<script>
+    let enter = document.getElementById('enter');
+    let start = document.getElementById('start');
+    let screen = document.getElementById('screen');
+
+    enter.addEventListener('click', () => {
+        start.style.display = 'none';
+        screen.style.display = 'block';
+    });
+    class Todo {
+        constructor(key) {
+            this.key = key;
+        }
+        settodo(todo_obj) {
+            let todo_data = this.gettodo();
+            todo_data ? todo_data.push(todo_obj) : todo_data = [todo_obj];
+            localStorage.setItem(this.key, JSON.stringify(todo_data));
+        }
+        gettodo() {
+            return JSON.parse(localStorage.getItem(this.key));
+        }
+    }
+    let notesTodo = new Todo("notes");
+    let highlightTodo = new Todo("highlights");
+    let my_form = document.querySelector('.my-form');
+    let desc = document.querySelector('.my_desc');
+    let todoEle = document.querySelector('.todos');
+    let Highlight_form = document.querySelector('.myhighlights');
+    let hightlightinput = document.querySelector('.Highlight-form');
+    let highlights_list = document.querySelector('.highlights_list');
+    function loadNotes() {
+        todoEle.innerHTML = "";
+        let all_todos = notesTodo.gettodo();
+        all_todos.forEach((t) => {
+            let div = document.createElement('div');
+            div.className = "card";
+            div.innerHTML = t.desc;
+            todoEle.appendChild(div);
+        });
+    }
+    function loadHighlights() {
+        highlights_list.innerHTML = "";
+        let all_highlights = highlightTodo.gettodo();
+        all_highlights.forEach((h) => {
+            let div = document.createElement('div');
+            div.className = "card";
+            div.innerHTML = h.text;
+            highlights_list.appendChild(div);
+        });
+
+    }
+    my_form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        let dt = new Date();
+        let curr_tm=`${dt.getHours()}:${dt.getMinutes()} ${dt.getDay()}-${dt.getMonth()}-${dt.getFullYear()}`;
+        let todo_obj = { desc: desc.value, currTm: curr_tm };
+        notesTodo.settodo(todo_obj);
+        loadNotes();
+    });
+    Highlight_form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let obj = { text: hightlightinput.value };
+        highlightTodo.settodo(obj);
+        loadHighlights();
+    })
+    window.addEventListener('load', () => {
+        loadNotes();
+        loadHighlights();
+    });
+</script>
+
+</html>
